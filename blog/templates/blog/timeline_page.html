@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+
+{% block title %}Social Media App{% endblock %}
+
+{% block content %}
+<div>
+    <div class="row">
+        <!-- Profile Card -->
+        <div class="col-3">
+            <div class="card" style="width: 18rem;">
+                <img
+                  src="https://www.pngmart.com/files/21/Account-Avatar-Profile-PNG-Photo.png"
+                  class="img-fluid rouded mx-auto mt-3"
+                  alt="User Image"
+                  width="100"
+                >
+                <!-- User Details -->
+                 <div class="card-body text-center mt-1">
+                    <a
+                        class="mx-2 text-decoration-none"
+                        href="{% url 'profile_page' user_id=user.id %}"
+                    >
+                        <h5 class="card-title text-primary">
+                            {{ user.username|title}}
+                        </h5>
+                    </a>
+                    
+                    <p class="text-secondary mt-1">
+                        <i>{{ user.email }}</i>
+                    </p>
+                 </div>
+                 <!-- Follower Details -->
+                  <div class="row justify-content-between text-primary gx-3 mx-3 mb-2">
+                    <div class="col">
+                        <b>Followers</b> {{ followers|length}}
+                    </div>
+                    <div class="col">
+                        <b>Following</b> {{ following|length}}
+                    </div>
+                  </div>
+            </div>
+        </div>
+        <!-- Timeline Posts -->
+        <div class="col-6">
+            <!-- Create New Post -->
+             <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="text-center">
+                    <button type="submit" class="btn rounded-pill btn-md btn-primary">
+                        Post
+                    </button>
+                </div>
+             </form>
+
+             <!-- Display Posts -->
+              <div class="mt-5">
+                <div>
+                    {% for post in posts %}
+                        <div class="card mx-auto m-3" style="width: 600px;">
+                            <div class="card-body">
+                                <!-- Post Header -->
+                                 <div class="row justify-content-between">
+                                    <div class="col-8" style="font-size: 20px;">
+                                        <img
+                                            src="https://www.pngmart.com/files/21/Account-Avatar-Profile-PNG-Photo.png"
+                                            class="img-fluid rouded "
+                                            alt="User Image"
+                                            width="30"
+                                        >
+                                        <a
+                                          class="mx-2 text-decoration-none"
+                                          href="{% url 'profile_page' user_id=post.user.id %}"
+                                        >
+                                            <i>{{ post.user.username|title}}</i>
+                                        </a>
+                                    </div>
+                                    <div class="col-4 text-secondary">
+                                        <i>Posted on {{post.posted_on|date:'f a'}}</i>
+                                    </div>
+                                 </div>
+                                 <!-- Post Title -->
+                                  <h5 class="card-title m-2">{{post.title}}</h5>
+                            </div>
+                            <!-- Post Image -->
+                             {% if post.image %}
+                                <div class="text-center mb-3">
+                                    <img
+                                      src="{{ post.image.url }}"
+                                      alt="POST IMAGE"
+                                      width="300"
+                                    >
+                                </div>
+                             {% endif %}
+                        </div>
+                    {% empty %}
+                        <div class="text-center">
+                            <i><p class="text-muted">No posts to display</p></i>
+                        </div>
+                    {% endfor %}
+                </div>
+              </div>
+        </div>
+        <!-- Users to follow -->
+        <div class="col-3">
+            <div class="text-primary">
+                <h5>People To Follow</h5>
+            </div>
+            <div class="m-2">
+                {% for person in to_follow %}
+                    <div>
+                        <a
+                          href="{% url 'profile_page' user_id=person.id %}"
+                          class="text-decoration-none"
+                        >
+                            <h6 class="text-info">
+                                {{person.username|title}}
+                            </h6>
+                        </a>
+                    </div>
+                {% empty %}
+                    <div class="text-center text-muted">
+                        <p><i>No new users to follow</i></p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
